@@ -1,0 +1,21 @@
+<html>
+
+<body>
+  <h1>Lec02 GET!</h1>
+  <div th:if="${username}">
+    <h1>Hi [[${username}]]</h1>
+  </div>
+  <div class="janken">
+    <a href="/lec02/gu">グー</a>
+    <a href="/lec02/choki">チョキ</a>
+    <a href="/lec02/pa">パー</a>
+  </div>
+  <div th:if="${judge}">
+    <p>あなたの手 [[${myhand}]]</p>
+    <p>相手の手[[${yourhand}]]</p>
+    <p>結果 [[${judge}]]</p>
+  </div>
+
+</body>
+
+</html>
