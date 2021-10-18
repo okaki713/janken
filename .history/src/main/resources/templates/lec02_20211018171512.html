@@ -1,20 +1,9 @@
 <html>
 
 <body>
-  <div><a href="/logout">ログアウト</a></div>
   <h1>Lec02 GET!</h1>
   <div th:if="${username}">
     <h1>Hi [[${username}]]</h1>
-  </div>
-  <div>
-  <div th:if="${entry}">
-    <p>エントリー</p>
-    <ul>
-      <!--eachは所謂for each．この場合roomオブジェクトのusersフィールドにあるすべてのデータを一通り表示する
-      thが指定されているので[]が不要になる-->
-      <li th:each="user : ${entry.users}">[[${user}]]</li>
-    </ul>
-  </div>
   </div>
   <div class="janken">
     <a href="/lec02/gu">グー</a>

@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import oit.is.z1246.kaizi.janken.model.Entry;
+import oit.is.z1246.janken.model.Entry;
 
 @Controller
 public class Lec02Controller {
 
   @Autowired
-  private Entry entry;
+  private Entry enrty;
   /**
    *
    * @param name
