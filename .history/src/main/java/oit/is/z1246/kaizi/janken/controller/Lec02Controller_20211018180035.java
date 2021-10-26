@@ -16,7 +16,7 @@ import oit.is.z1246.kaizi.janken.model.Entry;
 public class Lec02Controller {
 
   @Autowired
-  private Entry entry;
+  private Entry enrty;
   /**
    *
    * @param name
