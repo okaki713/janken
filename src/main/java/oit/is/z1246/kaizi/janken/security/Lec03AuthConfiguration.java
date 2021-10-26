@@ -23,6 +23,7 @@ public class Lec03AuthConfiguration extends WebSecurityConfigurerAdapter {
     // プログラム中に素のパスワードが含まれることになるので望ましくない
     auth.inMemoryAuthentication().withUser("user1").password(passwordEncoder().encode("okakita")).roles("USER");
     auth.inMemoryAuthentication().withUser("user2").password(passwordEncoder().encode("hideki")).roles("USER");
+    auth.inMemoryAuthentication().withUser("ほんだ").password(passwordEncoder().encode("honda")).roles("USER");
 
     // $ sshrun htpasswd -nbBC 10 admin adm1n
     // htpasswdでBCryptエンコードを行った後の文字列をパスワードとして指定している．
