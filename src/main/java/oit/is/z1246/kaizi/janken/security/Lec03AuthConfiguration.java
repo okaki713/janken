@@ -50,5 +50,7 @@ public class Lec03AuthConfiguration extends WebSecurityConfigurerAdapter {
     http.authorizeRequests().antMatchers("/lec02/**").authenticated();
     // Spring Securityの機能を利用してログアウト．ログアウト時は http://localhost:8000/ に戻る
     http.logout().logoutSuccessUrl("/");
+    http.csrf().disable();
+    http.headers().frameOptions().disable();
   }
 }
