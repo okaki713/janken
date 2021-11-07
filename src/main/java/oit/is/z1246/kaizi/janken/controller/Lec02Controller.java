@@ -1,22 +1,36 @@
 package oit.is.z1246.kaizi.janken.controller;
 
 import java.security.Principal;
+import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import oit.is.z1246.kaizi.janken.model.Entry;
+import oit.is.z1246.kaizi.janken.model.User;
+import oit.is.z1246.kaizi.janken.model.UserMapper;
+import oit.is.z1246.kaizi.janken.model.Match;
+import oit.is.z1246.kaizi.janken.model.MatchMapper;
 
 @Controller
+@RequestMapping("/")
 public class Lec02Controller {
 
   @Autowired
   private Entry entry;
+  @Autowired
+  UserMapper userMapper;
+
+  @Autowired
+  MatchMapper matchMapper;
+
   /**
    *
    * @param name
@@ -29,11 +43,9 @@ public class Lec02Controller {
     return "lec02.html";
   }
 
-/*  @GetMapping("/lec02")
-  public String lec021(){
-    return "lec02.html";
-  }
-*/
+  /*
+   * @GetMapping("/lec02") public String lec021(){ return "lec02.html"; }
+   */
 
   /**
    * パスパラメータ2つをGETで受け付ける 1つ目の変数をparam1という名前で，2つ目の変数をparam2という名前で受け取る
@@ -45,28 +57,35 @@ public class Lec02Controller {
    * @param model
    * @return
    */
-  @GetMapping("/lec02/{param1}")
+  @GetMapping("/match/{param1}")
+  @Transactional
   public String lec023(@PathVariable String param1, ModelMap model) {
     String myhand;
     String yourhand = "gu";
     String judge;
-    if(param1.equals("gu")){
+    if (param1.equals("gu")) {
       myhand = "gu";
       judge = "Draw...";
-    }else if(param1.equals("choki")){
+    } else if (param1.equals("choki")) {
       myhand = "choki";
       judge = "You Lose...";
-    }else if(param1.equals("pa")){
+    } else if (param1.equals("pa")) {
       myhand = "pa";
       judge = "You Win!!";
-    }else{
+    } else {
       myhand = "";
       judge = "";
     }
+    Match addmatch = new Match();
+    addmatch.setUser1(2);
+    addmatch.setUser2(1);
+    addmatch.setUser1Hand(myhand);
+    addmatch.setUser2Hand(yourhand);
+    matchMapper.insertMatch(addmatch);
     model.addAttribute("myhand", myhand);
     model.addAttribute("yourhand", yourhand);
     model.addAttribute("judge", judge);
-    return "lec02.html";
+    return "match.html";
 
   }
 
@@ -74,8 +93,22 @@ public class Lec02Controller {
   public String lec025(Principal prin, ModelMap model) {
     String loginUser = prin.getName();
     this.entry.addUser(loginUser);
+    ArrayList<User> chambers5 = userMapper.selectAllUsers();
+    ArrayList<Match> matches = matchMapper.selectAllMatches();
     model.addAttribute("entry", this.entry);
-
+    model.addAttribute("users", chambers5);
+    model.addAttribute("matches", matches);
     return "lec02.html";
+  }
+
+  @GetMapping("/match")
+  public String match(@RequestParam Integer id, ModelMap model, Principal prin) {
+    String user1 = prin.getName();
+    User user2 = userMapper.selectById(id);
+    System.out.println("user2name = " + user2.getName());
+    model.addAttribute("user1", user1);
+    model.addAttribute("user2", user2.getName());
+    return "match.html";
+
   }
 }
