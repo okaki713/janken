@@ -7,6 +7,16 @@ public class Match {
   String user1Hand;
   String user2Hand;
 
+  public boolean isActive() {
+    return isActive;
+  }
+
+  public void setActive(boolean isActive) {
+    this.isActive = isActive;
+  }
+
+  boolean isActive;
+
   public int getId() {
     return id;
   }
