@@ -93,4 +93,15 @@ public class Lec02Controller {
 
     return "lec02.html";
   }
+
+  @GetMapping("/match")
+  public String match(@RequestParam Integer id, ModelMap model, Principal prin) {
+    String user1 = prin.getName();
+    User user2 = userMapper.selectById(id);
+    System.out.println("user2name = " + user2.getName());
+    model.addAttribute("user1", user1);
+    model.addAttribute("user2", user2.getName());
+    return "match.html";
+
+  }
 }
