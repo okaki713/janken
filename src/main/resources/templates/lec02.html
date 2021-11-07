@@ -26,6 +26,17 @@
     <p>相手の手[[${yourhand}]]</p>
     <p>結果 [[${judge}]]</p>
   </div>
+  <div>
+    <h1>試合結果</h1>
+    <p th:each="match : ${matches}">
+      id:[[${match.id}]]
+      user1:[[${match.user1}]]
+      user2:[[${match.user2}]]
+      user1Hand:[[${match.user1Hand}]]
+      user2Hand:[[${match.user2Hand}]]
+    </p>
+  </div>
+
 </body>
 
 </html>
