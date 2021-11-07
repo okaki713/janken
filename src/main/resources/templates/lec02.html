@@ -7,14 +7,14 @@
     <h1>Hi [[${username}]]</h1>
   </div>
   <div>
-  <div th:if="${entry}">
-    <p>エントリー</p>
-    <ul>
-      <!--eachは所謂for each．この場合roomオブジェクトのusersフィールドにあるすべてのデータを一通り表示する
+    <div th:if="${users}">
+      <p>エントリー</p>
+      <ul>
+        <!--eachは所謂for each．この場合roomオブジェクトのusersフィールドにあるすべてのデータを一通り表示する
       thが指定されているので[]が不要になる-->
-      <li th:each="user : ${entry.users}">[[${user}]]</li>
-    </ul>
-  </div>
+        <li th:each="user : ${users}">[[${user.name}]]</li>
+      </ul>
+    </div>
   </div>
   <div class="janken">
     <a href="/lec02/gu">グー</a>
@@ -26,7 +26,6 @@
     <p>相手の手[[${yourhand}]]</p>
     <p>結果 [[${judge}]]</p>
   </div>
-
 </body>
 
 </html>
