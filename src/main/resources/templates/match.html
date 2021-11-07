@@ -8,8 +8,19 @@
 
 <body>
   <div><a href="/logout">ログアウト</a></div>
+  <a href="/lec02">もどる</a>
   <h1>Match</h1>
   <h2>[[${user1}]] V.S. [[${user2}]]</h2>
+  <div class="janken">
+    <a href="/match/gu">グー</a>
+    <a href="/match/choki">チョキ</a>
+    <a href="/match/pa">パー</a>
+  </div>
+  <div th:if="${judge}">
+    <p>あなたの手 [[${myhand}]]</p>
+    <p>相手の手[[${yourhand}]]</p>
+    <p>結果 [[${judge}]]</p>
+  </div>
 
 </body>
 

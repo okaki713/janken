@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -56,7 +57,8 @@ public class Lec02Controller {
    * @param model
    * @return
    */
-  @GetMapping("/lec02/{param1}")
+  @GetMapping("/match/{param1}")
+  @Transactional
   public String lec023(@PathVariable String param1, ModelMap model) {
     String myhand;
     String yourhand = "gu";
@@ -74,10 +76,16 @@ public class Lec02Controller {
       myhand = "";
       judge = "";
     }
+    Match addmatch = new Match();
+    addmatch.setUser1(2);
+    addmatch.setUser2(1);
+    addmatch.setUser1Hand(myhand);
+    addmatch.setUser2Hand(yourhand);
+    matchMapper.insertMatch(addmatch);
     model.addAttribute("myhand", myhand);
     model.addAttribute("yourhand", yourhand);
     model.addAttribute("judge", judge);
-    return "lec02.html";
+    return "match.html";
 
   }
 
@@ -90,7 +98,6 @@ public class Lec02Controller {
     model.addAttribute("entry", this.entry);
     model.addAttribute("users", chambers5);
     model.addAttribute("matches", matches);
-
     return "lec02.html";
   }
 

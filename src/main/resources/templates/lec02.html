@@ -16,16 +16,6 @@
       </ul>
     </div>
   </div>
-  <div class="janken">
-    <a href="/lec02/gu">グー</a>
-    <a href="/lec02/choki">チョキ</a>
-    <a href="/lec02/pa">パー</a>
-  </div>
-  <div th:if="${judge}">
-    <p>あなたの手 [[${myhand}]]</p>
-    <p>相手の手[[${yourhand}]]</p>
-    <p>結果 [[${judge}]]</p>
-  </div>
   <div>
     <h1>試合結果</h1>
     <p th:each="match : ${matches}">
