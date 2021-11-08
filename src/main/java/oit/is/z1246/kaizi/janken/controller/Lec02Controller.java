@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import oit.is.z1246.kaizi.janken.model.Entry;
 import oit.is.z1246.kaizi.janken.model.User;
@@ -20,6 +21,7 @@ import oit.is.z1246.kaizi.janken.model.Match;
 import oit.is.z1246.kaizi.janken.model.MatchMapper;
 import oit.is.z1246.kaizi.janken.model.Matchinfo;
 import oit.is.z1246.kaizi.janken.model.MatchinfoMapper;
+import oit.is.z1246.kaizi.janken.service.AsyncKekka;
 
 @Controller
 @RequestMapping("/")
@@ -35,6 +37,9 @@ public class Lec02Controller {
 
   @Autowired
   MatchinfoMapper matchinfoMapper;
+
+  @Autowired
+  AsyncKekka aKekka;
 
   /**
    *
@@ -77,14 +82,32 @@ public class Lec02Controller {
     } else {
       myhand = "";
     }
-    Matchinfo addmatchinfo = new Matchinfo();
-    addmatchinfo.setUser1(userMapper.selectByName(prin.getName()).getId());
-    addmatchinfo.setUser2(Integer.parseInt(param2));
-    addmatchinfo.setUser1Hand(myhand);
-    addmatchinfo.setActive(true);
-    matchinfoMapper.insertMatchinfo(addmatchinfo);
+    int myid = userMapper.selectByName(prin.getName()).getId();
+    int yourid = 0;
+    ArrayList<Matchinfo> matchinfo = matchinfoMapper.selectAllMyMatches(myid);
+    if (matchinfo == null || matchinfo.isEmpty()) {
+      Matchinfo addmatchinfo = new Matchinfo();
+      addmatchinfo.setUser1(myid);
+      addmatchinfo.setUser2(Integer.parseInt(param2));
+      addmatchinfo.setUser1Hand(myhand);
+      addmatchinfo.setActive(true);
+      matchinfoMapper.insertMatchinfo(addmatchinfo);
+    } else {
+      Matchinfo mi = matchinfo.get(0);
+      yourid = mi.getId();
+      Match addmatch = new Match();
+      addmatch.setUser1(mi.getUser1());
+      addmatch.setUser1Hand(mi.getUser1Hand());
+      addmatch.setUser2(myid);
+      addmatch.setUser2Hand(myhand);
+      addmatch.setActive(true);
+      matchMapper.insertMatch(addmatch);
+      matchinfoMapper.updateisActives();
+    }
     model.addAttribute("myhand", myhand);
     model.addAttribute("login_user", prin.getName());
+    model.addAttribute("user1id", yourid);
+    model.addAttribute("user2id", myid);
     return "wait.html";
 
   }
@@ -96,6 +119,7 @@ public class Lec02Controller {
     ArrayList<User> chambers5 = userMapper.selectAllUsers();
     ArrayList<Match> matches = matchMapper.selectAllMatches();
     ArrayList<Matchinfo> matchinfo = matchinfoMapper.selectAllActiveMatches();
+    model.addAttribute("username", loginUser);
     model.addAttribute("entry", this.entry);
     model.addAttribute("users", chambers5);
     model.addAttribute("matches", matches);
@@ -113,5 +137,12 @@ public class Lec02Controller {
     model.addAttribute("id", id);
     return "match.html";
 
+  }
+
+  @GetMapping("/result")
+  public SseEmitter judge() {
+    final SseEmitter sseEmitter = new SseEmitter();
+    this.aKekka.asyncJudgeMatch(sseEmitter);
+    return sseEmitter;
   }
 }
