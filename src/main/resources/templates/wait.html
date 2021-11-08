@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="jp">
+
+<head>
+  <meta charset="UTF-8">
+  <title>相手の手を待っています</title>
+  <script>
+    window.onload = function () {
+      var sse = new EventSource('/result');
+      sse.onmessage = function (event) {
+        var match_text = "";
+        console.log("sse.onmessage")
+        console.log(event.data);
+        var match = JSON.parse(event.data);//JSONオブジェクトとしてparse
+        match_text = "<p>" + "match: id " + match[0].id + " user1:" + match[0].user1 + " user2:" + match[0].user2 + " user1Hand" + match[0].user1Hand + " user2Hand:" + match[0].user2Hand + "</p>" + "<a href='/lec02'>もどる</a>";
+        console.log(match_text);
+        var body = document.getElementById("matches");
+        body.innerHTML = match_text;
+      }
+
+    }
+  </script>
+</head>
+
+<body>
+  <h1>相手の手を待っています</h1>
+  <p>Hi [[${login_user}]]</p>
+  <div id="matches"></div>
+</body>
+
+</html>

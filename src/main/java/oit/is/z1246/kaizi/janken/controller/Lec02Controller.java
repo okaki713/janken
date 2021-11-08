@@ -12,12 +12,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import oit.is.z1246.kaizi.janken.model.Entry;
 import oit.is.z1246.kaizi.janken.model.User;
 import oit.is.z1246.kaizi.janken.model.UserMapper;
 import oit.is.z1246.kaizi.janken.model.Match;
 import oit.is.z1246.kaizi.janken.model.MatchMapper;
+import oit.is.z1246.kaizi.janken.model.Matchinfo;
+import oit.is.z1246.kaizi.janken.model.MatchinfoMapper;
+import oit.is.z1246.kaizi.janken.service.AsyncKekka;
 
 @Controller
 @RequestMapping("/")
@@ -30,6 +34,12 @@ public class Lec02Controller {
 
   @Autowired
   MatchMapper matchMapper;
+
+  @Autowired
+  MatchinfoMapper matchinfoMapper;
+
+  @Autowired
+  AsyncKekka aKekka;
 
   /**
    *
@@ -57,35 +67,48 @@ public class Lec02Controller {
    * @param model
    * @return
    */
-  @GetMapping("/match/{param1}")
+  @GetMapping("/match/{param1}/{param2}")
   @Transactional
-  public String lec023(@PathVariable String param1, ModelMap model) {
+  public String lec023(@PathVariable String param1, @PathVariable String param2, ModelMap model, Principal prin) {
     String myhand;
     String yourhand = "gu";
     String judge;
     if (param1.equals("gu")) {
       myhand = "gu";
-      judge = "Draw...";
     } else if (param1.equals("choki")) {
       myhand = "choki";
-      judge = "You Lose...";
     } else if (param1.equals("pa")) {
       myhand = "pa";
-      judge = "You Win!!";
     } else {
       myhand = "";
-      judge = "";
     }
-    Match addmatch = new Match();
-    addmatch.setUser1(2);
-    addmatch.setUser2(1);
-    addmatch.setUser1Hand(myhand);
-    addmatch.setUser2Hand(yourhand);
-    matchMapper.insertMatch(addmatch);
+    int myid = userMapper.selectByName(prin.getName()).getId();
+    int yourid = 0;
+    ArrayList<Matchinfo> matchinfo = matchinfoMapper.selectAllMyMatches(myid);
+    if (matchinfo == null || matchinfo.isEmpty()) {
+      Matchinfo addmatchinfo = new Matchinfo();
+      addmatchinfo.setUser1(myid);
+      addmatchinfo.setUser2(Integer.parseInt(param2));
+      addmatchinfo.setUser1Hand(myhand);
+      addmatchinfo.setActive(true);
+      matchinfoMapper.insertMatchinfo(addmatchinfo);
+    } else {
+      Matchinfo mi = matchinfo.get(0);
+      yourid = mi.getId();
+      Match addmatch = new Match();
+      addmatch.setUser1(mi.getUser1());
+      addmatch.setUser1Hand(mi.getUser1Hand());
+      addmatch.setUser2(myid);
+      addmatch.setUser2Hand(myhand);
+      addmatch.setActive(true);
+      matchMapper.insertMatch(addmatch);
+      matchinfoMapper.updateisActives();
+    }
     model.addAttribute("myhand", myhand);
-    model.addAttribute("yourhand", yourhand);
-    model.addAttribute("judge", judge);
-    return "match.html";
+    model.addAttribute("login_user", prin.getName());
+    model.addAttribute("user1id", yourid);
+    model.addAttribute("user2id", myid);
+    return "wait.html";
 
   }
 
@@ -95,9 +118,12 @@ public class Lec02Controller {
     this.entry.addUser(loginUser);
     ArrayList<User> chambers5 = userMapper.selectAllUsers();
     ArrayList<Match> matches = matchMapper.selectAllMatches();
+    ArrayList<Matchinfo> matchinfo = matchinfoMapper.selectAllActiveMatches();
+    model.addAttribute("username", loginUser);
     model.addAttribute("entry", this.entry);
     model.addAttribute("users", chambers5);
     model.addAttribute("matches", matches);
+    model.addAttribute("info", matchinfo);
     return "lec02.html";
   }
 
@@ -108,7 +134,15 @@ public class Lec02Controller {
     System.out.println("user2name = " + user2.getName());
     model.addAttribute("user1", user1);
     model.addAttribute("user2", user2.getName());
+    model.addAttribute("id", id);
     return "match.html";
 
+  }
+
+  @GetMapping("/result")
+  public SseEmitter judge() {
+    final SseEmitter sseEmitter = new SseEmitter();
+    this.aKekka.asyncJudgeMatch(sseEmitter);
+    return sseEmitter;
   }
 }
