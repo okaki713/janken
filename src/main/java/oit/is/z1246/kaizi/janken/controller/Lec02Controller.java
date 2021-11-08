@@ -95,9 +95,11 @@ public class Lec02Controller {
     this.entry.addUser(loginUser);
     ArrayList<User> chambers5 = userMapper.selectAllUsers();
     ArrayList<Match> matches = matchMapper.selectAllMatches();
+    ArrayList<Matchinfo> matchinfo = matchinfoMapper.selectAllActiveMatches();
     model.addAttribute("entry", this.entry);
     model.addAttribute("users", chambers5);
     model.addAttribute("matches", matches);
+    model.addAttribute("info", matchinfo);
     return "lec02.html";
   }
 
