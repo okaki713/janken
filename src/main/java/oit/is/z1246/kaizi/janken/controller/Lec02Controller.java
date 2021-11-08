@@ -18,6 +18,8 @@ import oit.is.z1246.kaizi.janken.model.User;
 import oit.is.z1246.kaizi.janken.model.UserMapper;
 import oit.is.z1246.kaizi.janken.model.Match;
 import oit.is.z1246.kaizi.janken.model.MatchMapper;
+import oit.is.z1246.kaizi.janken.model.Matchinfo;
+import oit.is.z1246.kaizi.janken.model.MatchinfoMapper;
 
 @Controller
 @RequestMapping("/")
@@ -30,6 +32,9 @@ public class Lec02Controller {
 
   @Autowired
   MatchMapper matchMapper;
+
+  @Autowired
+  MatchinfoMapper matchinfoMapper;
 
   /**
    *
@@ -57,35 +62,30 @@ public class Lec02Controller {
    * @param model
    * @return
    */
-  @GetMapping("/match/{param1}")
+  @GetMapping("/match/{param1}/{param2}")
   @Transactional
-  public String lec023(@PathVariable String param1, ModelMap model) {
+  public String lec023(@PathVariable String param1, @PathVariable String param2, ModelMap model, Principal prin) {
     String myhand;
     String yourhand = "gu";
     String judge;
     if (param1.equals("gu")) {
       myhand = "gu";
-      judge = "Draw...";
     } else if (param1.equals("choki")) {
       myhand = "choki";
-      judge = "You Lose...";
     } else if (param1.equals("pa")) {
       myhand = "pa";
-      judge = "You Win!!";
     } else {
       myhand = "";
-      judge = "";
     }
-    Match addmatch = new Match();
-    addmatch.setUser1(2);
-    addmatch.setUser2(1);
-    addmatch.setUser1Hand(myhand);
-    addmatch.setUser2Hand(yourhand);
-    matchMapper.insertMatch(addmatch);
+    Matchinfo addmatchinfo = new Matchinfo();
+    addmatchinfo.setUser1(userMapper.selectByName(prin.getName()).getId());
+    addmatchinfo.setUser2(Integer.parseInt(param2));
+    addmatchinfo.setUser1Hand(myhand);
+    addmatchinfo.setActive(true);
+    matchinfoMapper.insertMatchinfo(addmatchinfo);
     model.addAttribute("myhand", myhand);
-    model.addAttribute("yourhand", yourhand);
-    model.addAttribute("judge", judge);
-    return "match.html";
+    model.addAttribute("login_user", prin.getName());
+    return "wait.html";
 
   }
 
@@ -108,6 +108,7 @@ public class Lec02Controller {
     System.out.println("user2name = " + user2.getName());
     model.addAttribute("user1", user1);
     model.addAttribute("user2", user2.getName());
+    model.addAttribute("id", id);
     return "match.html";
 
   }

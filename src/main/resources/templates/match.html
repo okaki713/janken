@@ -12,9 +12,9 @@
   <h1>Match</h1>
   <h2>[[${user1}]] V.S. [[${user2}]]</h2>
   <div class="janken">
-    <a href="/match/gu">グー</a>
-    <a href="/match/choki">チョキ</a>
-    <a href="/match/pa">パー</a>
+    <a th:href="@{/match/gu/{id}(id=${id})}">グー</a>
+    <a th:href="@{/match/choki/{id}(id=${id})}">チョキ</a>
+    <a th:href="@{/match/pa/{id}(id=${id})}">パー</a>
   </div>
   <div th:if="${judge}">
     <p>あなたの手 [[${myhand}]]</p>
